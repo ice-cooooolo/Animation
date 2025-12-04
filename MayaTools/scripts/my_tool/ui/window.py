@@ -17,6 +17,7 @@ except ImportError:
 from .widgets import home_widget
 from .widgets import controller_box_widget
 from .widgets import renamer_widget
+from .widgets import checker_widget
 
 WINDOW_OBJECT_NAME = "My_TATool_Unique_ID_v1"
 
@@ -70,7 +71,7 @@ class MainWindow(QtWidgets.QWidget):
         self.page_home = home_widget.HomeWidget()
         # (以后这里可以加 self.page_rig, self.page_check 等)
         self.page_rig_placeholder = controller_box_widget.ControlBoxWidget()
-        self.page_check_placeholder = QtWidgets.QLabel("Checker Page (Coming Soon)", alignment=QtCore.Qt.AlignCenter)
+        self.page_check_placeholder = checker_widget.CheckerWidget()
         self.page_rename_placeholder = renamer_widget.RenamerWidget()
 
         # 2. 加入堆叠
