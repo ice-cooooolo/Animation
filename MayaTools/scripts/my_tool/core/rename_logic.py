@@ -1,9 +1,6 @@
 # my_tool/core/renamer_logic.py
-from itertools import count
-
 import maya.cmds as cmds
 from ..utils.decorators import undoable
-
 
 def get_safe_selection(include_hierarchy = False):
     sel = cmds.ls(selection=True, long=True)
