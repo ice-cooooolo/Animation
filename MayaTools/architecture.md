@@ -187,3 +187,109 @@ def batch_renumber(base_name, start_num, padding, include_hierarchy = False):
 这个ui和core都很简单，同样的获取line_edit，然后遍历集合，加在开头或者结尾
 ```
 
+
+
+Checker.widget
+
+![image-20251204203258123](C:\Users\Li\AppData\Roaming\Typora\typora-user-images\image-20251204203258123.png)
+
+```
+ui中比较重要的代码就是
+Run_check()时候，我们首先获取当前mode,然后从config里面得到需要检查的类，通过cls()实例化
+
+# 【黑科技】把整个 item 对象存入 UI 控件中
+# UserRole 是 Qt 预留给我们存私货的地方
+root.setData(0, QtCore.Qt.UserRole, item)
+
+之后不管单机还是选择节点，都可以通过QtCore.Qt.UserRole获取
+
+双击：选取有问题的节点data = item.data(0, QtCore.Qt.UserRole) if isinstance(data, str):cmds.select(data)
+
+单机：判断是否可以修复data = item.data(0, QtCore.Qt.UserRole) if hasattr(data, "is_fixable") and data.is_fixable and data.status == "Failed":
+
+修复：item = self.tree.currentItem()， check_obj = item.data(0, QtCore.Qt.UserRole) 然后修复
+
+选取所有有问题的节点： iterator = QtWidgets.QTreeWidgetItemIterator(self.tree) item = iterator.value()
+```
+
+
+
+```
+core的代码：
+
+config作为配置文件，checker_logic.py是获取当前模式所有要检查的类，展示了工厂模式和面向对象编程。有利于后续开发的扩展，无需更改ui层的代码，也没有繁琐的if代码，因为都是同个基类，直接调用check和fix函数即可
+
+HistoryCheck: 
+history = cmds.listHistory(obj, pruneDagObjects=True) # 排除本身， 查询对这个节点有影响的DAG - check
+cmds.delete(self.failed_objects, constructionHistory=True) # fix方法核心
+
+UnFrozenTransformCheck：
+检查translate≈0， rotation≈0， scale ≈ 1 - check
+cmds.makeIdentity(self.failed_objects, apply=True, translate=True, rotate=True, scale=True) - fix冻结变换
+
+NgonsCheck：
+cmds.polySelectConstraint(mode=3, type=0x0008, size=3)  - 筛选出来所有边数大于3的
+
+FPSCheck:
+current_time_unit = cmds.currentUnit(query=True, time=True) # - 判断帧数
+cmds.currentUnit(time="film") # - fix
+
+UnknownNodeCheck：
+unknows = cmds.ls(type="unknown") # - 判断有没有unknown节点
+cmds.lockNode(unknown, lock=False) cmds.delete(unknown) # -解锁然后删除
+```
+
+
+
+```
+Run_Cycle/                  <-- 【资产根目录】
+│
+├── meta.json               <-- 【大脑】版本数据库
+│
+├── workspace.ma            <-- 【工作文件】(可选) 永远是当前最新状态，方便引用
+│
+└── _versions/              <-- 【版本库】(隐藏细节)
+    ├── v001/
+    │   ├── Run_Cycle_v001.ma
+    │   └── Run_Cycle_v001.jpg  <-- 缩略图
+    ├── v002/
+    │   ├── Run_Cycle_v002.ma
+    │   └── Run_Cycle_v002.jpg
+    └── ...
+```
+
+![image-20251208215905754](C:\Users\Li\AppData\Roaming\Typora\typora-user-images\image-20251208215905754.png)
+
+```
+core:
+scene_name = cmds.file(query=True, sceneName=True)
+ - refresh_context： 通过scene_name找到当前工作目录，并且判断是否再子文件夹中
+ - load_data： 如果是再根目录并且meta.json存在就加载，否则创建并且输入默认数据
+ - save_data： 保存传入的json数据
+ - create_version: 计算版本号 -> 创建子文件夹 -> 截图 -> 拷贝文件 -> 更新json
+ - open_version_file： cmds.file(full_path, open=True, force=True)打开这个文件，并且refresh_context刷新context
+```
+
+```
+UI：
+UI被拆成上中下三个布局，分别是：
+1.info_layout = QtWidgets.QHBoxLayout() # --- A. 顶部信息栏 --- 资产名字 + refresh按钮
+2. self.splitter = QtWidgets.QSplitter(QtCore.Qt.Horizontal) # --- B. 中间核心区 (左右分栏) --- QListWidget列表 + 一个布局（QLabel/缩略图 + QLabel/version信息 + QCheckBox/publish勾选框 + QPushButton/open this version按钮）
+3. save_group = QtWidgets.QGroupBox("Save New Version") # --- C. 底部：存新版本区域 ---
+
+初始化时候refresh_list
+refresh_list: 调用refresh_context, 拿到meta.json数据，根据倒叙写入列表（版本+用户+备注），写入UserRole方便其他方法调用item.setData(QtCore.Qt.UserRole, info)
+
+on_save_clicked: 调用create_version然后refresh_list，刷新一下最新的版本
+
+on_item_clicked： 通过info = item.data(QtCore.Qt.UserRole)拿到当前对象，设置右侧版本+用户+时间+资源名字+备注,然后设置图片
+
+pixmap = QtGui.QPixmap(full_thumb_path)
+scaled_pix = pixmap.scaled(self.lbl_thumbnail.size(), QtCore.Qt.KeepAspectRatio,QtCore.Qt.SmoothTransformation)
+self.lbl_thumbnail.setPixmap(scaled_pix)
+
+on_open_clicked： 拿到当前item，获取当前item的userrole，拿到版本号调用open_version_file，调用refresh_list
+
+on_publish_toggled： 修改json数据，然后调用save_data，调用refresh_list
+```
+
