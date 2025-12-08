@@ -153,7 +153,7 @@ class CheckerWidget(QtWidgets.QWidget):
         item = self.tree.currentItem()
         if not item: return
 
-        # 取出藏好的对象
+        # 取出藏好的对象 checkItem
         check_obj = item.data(0, QtCore.Qt.UserRole)
 
         if hasattr(check_obj, "fix"):

@@ -22,7 +22,8 @@ class FPSCheck(CheckItem):
             self.failed_objects = ["Time Settings Node"]
 
     def fix(self):
-        cmds.currentUnit(time="film")
+        from ... import config
+        cmds.currentUnit(time=config.TARGET_FPS)
         print("Fixed: FPS set to 24fps (film)")
         self.check()
 
