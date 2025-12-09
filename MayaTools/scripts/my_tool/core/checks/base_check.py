@@ -2,6 +2,7 @@ class CheckItem:
     label = "Unknown Check"
     category = "General"
     is_fixable = False
+    is_critical = True
 
     def __init__(self):
         self.status = "Idle" # Idle, Passed, Failed, Warning
