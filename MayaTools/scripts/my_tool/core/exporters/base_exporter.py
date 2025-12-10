@@ -1,6 +1,8 @@
 import os
 import maya.cmds as cmds
 import maya.mel as mel
+from ... import config
+from .. import checker_logic
 
 class ExporterBase:
     """
@@ -21,6 +23,44 @@ class ExporterBase:
     def add_log(self, message):
         print(f"[{self.__class__.__name__}] {message}")
         self.log.append(message)
+
+    def run_preflight_checks(self, mode):
+        """
+        通用功能：读取 Config，运行所有检查，尝试自动修复。
+        如果遇到无法修复的致命错误，返回 False。
+        """
+        self.add_log(f"--- Running Pre-flight Checks for [{mode}] ---")
+        check_instances = checker_logic.get_checks(mode)
+
+        all_passed = True
+
+        for check_item in check_instances:
+            check_item.check()
+
+            if check_item.status == "Failed":
+                self.add_log(f"xx Failed: {check_item.label}")
+                self.add_log(f"   Reason: {check_item.info_message}")
+
+                # 尝试修复
+                if check_item.is_fixable:
+                    self.add_log(f"   >> Attempting Auto-fix...")
+                    check_item.fix()
+
+                    # 修复后复查
+                    if check_item.status == "Passed":
+                        self.add_log(f"   >> Fixed successfully!")
+                        continue  # 继续下一个检查
+                    else:
+                        self.add_log(f"   >> Fix Failed!")
+
+                # 如果没修好，或者是不可修的
+                if check_item.is_critical:
+                    self.add_log("CRITICAL ERROR. Stopping Export.")
+                    all_passed = False
+                    break  # 致命错误，直接跳出循环
+                else:
+                    self.add_log("Warning: Ignoring non-critical error.")
+        return all_passed
 
     def run(self, file_path, output_dir):
         """
