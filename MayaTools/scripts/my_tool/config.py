@@ -27,6 +27,6 @@ CHECK_LIST = {
 
     "Animation": [
         scene_checks.FPSCheck,
-        # anim_checks.KeyframeOnGeoCheck,
+        scene_checks.AnimationRangeCheck
     ]
 }

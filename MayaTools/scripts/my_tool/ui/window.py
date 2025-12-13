@@ -15,7 +15,7 @@ except ImportError:
 # --- 2. 导入子页面 ---
 # 注意：这里引用了刚才新建的 home_widget
 from .widgets import home_widget
-from .widgets import controller_box_widget, renamer_widget, checker_widget, version_widget
+from .widgets import controller_box_widget, renamer_widget, checker_widget, version_widget, exporter_widget
 
 WINDOW_OBJECT_NAME = "My_TATool_Unique_ID_v1"
 
@@ -57,9 +57,10 @@ class MainWindow(QtWidgets.QWidget):
         self.btn_check = QtWidgets.QPushButton("检查 / Check")
         self.btn_rename = QtWidgets.QPushButton("重命名 / Rename")
         self.btn_version = QtWidgets.QPushButton("版本控制 / Version")
+        self.btn_export = QtWidgets.QPushButton("导出 / Export")
 
         # 按钮样式优化 (高度设大一点)
-        for btn in [ self.btn_rig, self.btn_check, self.btn_rename, self.btn_version]:
+        for btn in [ self.btn_rig, self.btn_check, self.btn_rename, self.btn_version, self.btn_export]:
             btn.setMinimumHeight(30)
             menu_layout.addWidget(btn)
 
@@ -73,6 +74,7 @@ class MainWindow(QtWidgets.QWidget):
         self.page_check_placeholder = checker_widget.CheckerWidget()
         self.page_rename_placeholder = renamer_widget.RenamerWidget()
         self.page_version_placeholder = version_widget.VersionWidget()
+        self.page_exporter_placeholder = exporter_widget.ExporterWidget()
 
         # 2. 加入堆叠
         # self.stack.addWidget(self.page_home)  # Index 0
@@ -80,6 +82,7 @@ class MainWindow(QtWidgets.QWidget):
         self.stack.addWidget(self.page_check_placeholder)  # Index 2
         self.stack.addWidget(self.page_rename_placeholder)
         self.stack.addWidget(self.page_version_placeholder)
+        self.stack.addWidget(self.page_exporter_placeholder)
 
         # === C. 组装 ===
         main_layout.addWidget(self.side_menu)
@@ -91,6 +94,7 @@ class MainWindow(QtWidgets.QWidget):
         self.btn_check.clicked.connect(lambda: self.stack.setCurrentIndex(1))
         self.btn_rename.clicked.connect(lambda: self.stack.setCurrentIndex(2))
         self.btn_version.clicked.connect(lambda: self.stack.setCurrentIndex(3))
+        self.btn_export.clicked.connect(lambda: self.stack.setCurrentIndex(4))
 
     # --- 单例启动方法 ---
     @classmethod
