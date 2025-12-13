@@ -51,50 +51,48 @@ class MainWindow(QtWidgets.QWidget):
         menu_layout.setContentsMargins(5, 10, 5, 10)
         menu_layout.setAlignment(QtCore.Qt.AlignTop)
 
-        # 导航按钮
-        # self.btn_home = QtWidgets.QPushButton("主页 / Home")
-        self.btn_rig = QtWidgets.QPushButton("绑定 / Rig")
-        self.btn_check = QtWidgets.QPushButton("检查 / Check")
-        self.btn_rename = QtWidgets.QPushButton("重命名 / Rename")
-        self.btn_version = QtWidgets.QPushButton("版本控制 / Version")
-        self.btn_export = QtWidgets.QPushButton("导出 / Export")
+        # === 1. 定义页面配置 (Registry) ===
+        # 这是一个列表，每一项是一个元组/字典：(按钮显示文字, 对应的页面类)
+        # 这种数据结构让顺序和内容一目了然，想调整顺序只需要在这里换行
+        page_config = [
+            ("绑定 / Rig", controller_box_widget.ControlBoxWidget),
+            ("检查 / Check", checker_widget.CheckerWidget),
+            ("重命名 / Rename", renamer_widget.RenamerWidget),
+            ("版本控制 / Version", version_widget.VersionWidget),
+            ("导出 / Export", exporter_widget.ExporterWidget)
+        ]
 
-        # 按钮样式优化 (高度设大一点)
-        for btn in [ self.btn_rig, self.btn_check, self.btn_rename, self.btn_version, self.btn_export]:
-            btn.setMinimumHeight(30)
-            menu_layout.addWidget(btn)
-
-        # === B. 右侧：内容堆叠区 ===
+        # === 2. 循环生成 (Factory Loop) ===
         self.stack = QtWidgets.QStackedWidget()
 
-        # 1. 实例化子页面
-        # self.page_home = home_widget.HomeWidget()
-        # (以后这里可以加 self.page_rig, self.page_check 等)
-        self.page_rig_placeholder = controller_box_widget.ControlBoxWidget()
-        self.page_check_placeholder = checker_widget.CheckerWidget()
-        self.page_rename_placeholder = renamer_widget.RenamerWidget()
-        self.page_version_placeholder = version_widget.VersionWidget()
-        self.page_exporter_placeholder = exporter_widget.ExporterWidget()
+        # 我们用 enumerate 获取索引 i，用于后面的信号连接
+        for i, (btn_text, widget_class) in enumerate(page_config):
+            # --- A. 创建并配置按钮 ---
+            btn = QtWidgets.QPushButton(btn_text)
+            btn.setMinimumHeight(30)
 
-        # 2. 加入堆叠
-        # self.stack.addWidget(self.page_home)  # Index 0
-        self.stack.addWidget(self.page_rig_placeholder)  # Index 1
-        self.stack.addWidget(self.page_check_placeholder)  # Index 2
-        self.stack.addWidget(self.page_rename_placeholder)
-        self.stack.addWidget(self.page_version_placeholder)
-        self.stack.addWidget(self.page_exporter_placeholder)
+            # 添加到侧边栏布局
+            menu_layout.addWidget(btn)
 
-        # === C. 组装 ===
+            # --- B. 实例化并添加页面 ---
+            # 动态实例化类：widget_class() 等同于 exporter_widget.ExporterWidget()
+            page_widget = widget_class()
+            self.stack.addWidget(page_widget)
+
+            # --- C. 信号连接 ---
+            btn.clicked.connect(lambda checked=False, index=i: self.switch_page(index))
+
+        # 加弹簧，把按钮顶上去
+        menu_layout.addStretch()
+
+        # === 3. 组装 ===
         main_layout.addWidget(self.side_menu)
         main_layout.addWidget(self.stack)
 
-        # === D. 信号连接 ===
-        # self.btn_home.clicked.connect(lambda: self.stack.setCurrentIndex(0))
-        self.btn_rig.clicked.connect(lambda: self.stack.setCurrentIndex(0))
-        self.btn_check.clicked.connect(lambda: self.stack.setCurrentIndex(1))
-        self.btn_rename.clicked.connect(lambda: self.stack.setCurrentIndex(2))
-        self.btn_version.clicked.connect(lambda: self.stack.setCurrentIndex(3))
-        self.btn_export.clicked.connect(lambda: self.stack.setCurrentIndex(4))
+        # === 辅助函数 ===
+
+    def switch_page(self, index):
+        self.stack.setCurrentIndex(index)
 
     # --- 单例启动方法 ---
     @classmethod

@@ -85,7 +85,7 @@ class ExporterWidget(QtWidgets.QWidget):
         self.text_log.setMaximumHeight(150)
         self.text_log.setStyleSheet("background-color: #222; color: #AAA; font-family: Consolas;")
 
-        self.btn_export = QtWidgets.QPushButton("🚀 BATCH EXPORT")
+        self.btn_export = QtWidgets.QPushButton("BATCH EXPORT")
         self.btn_export.setMinimumHeight(50)
         self.btn_export.setStyleSheet("background-color: #D35400; color: white; font-weight: bold; font-size: 14px;")
 
