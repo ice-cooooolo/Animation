@@ -15,56 +15,62 @@ class AnimExporter(ExporterBase):
     5. Export Selection (利用 FBX 导出选中项功能，自动过滤掉控制器垃圾)
     """
     def _process_logic(self):
-        # --- 1. 通用检查 (Config-Driven) ---
-        # 直接调用基类的方法，它会自动去 config.py 找 "Animation" 列表并运行
-        # 如果有 FPS 错误，基类会尝试自动修复 (Fix)，修不好返回 False
+        # --- 1. 通用检查 ---
         if not self.run_preflight_checks("Animation"):
             return False
-        # --- 2. 寻找根骨骼 (Root Joint) ---
+
+        # --- 2. 寻找根骨骼 ---
         root_joint = self._find_root_joint()
         if not root_joint:
-            self.add_log("Error: Could not find Root Joint! (Looking for 'Root', 'Hips' or top-level joint)")
+            self.add_log("Error: Could not find Root Joint!")
             return False
         self.add_log(f"Found Root Joint: {root_joint}")
+
         # --- 3. 获取时间范围 ---
         start = cmds.playbackOptions(query=True, minTime=True)
         end = cmds.playbackOptions(query=True, maxTime=True)
+
+        # ========================================================
+        # 【关键修改 A】: 获取整个骨骼家族列表
+        # 我们不只要 root，我们要找到它下面每一根骨头
+        # ========================================================
+        all_joints = cmds.listRelatives(root_joint, allDescendents=True, type="joint", fullPath=True) or []
+        all_joints.append(root_joint) # 别忘了把爷爷（Root）也加进去
+
         # --- 4. 烘焙动画 (The Core) ---
         self.add_log(f"Baking simulation ({start} - {end})...")
         try:
-            # hierarchy="below": 连带子孙一起烘焙
-            # simulation=True: 完整模拟 (处理 IK、动力学)
-            # disableImplicitControl=True: 关键参数！这会断开约束连接，把力“烙印”在骨骼上
+            # 【关键修改 B】: 直接烘焙列表，而不是只给一个 root 让它去猜
             cmds.bakeResults(
-                root_joint,
-                hierarchy="below",
-                simulation=True,
+                all_joints,              # <--- 明确指定烤哪些骨头
                 t=(start, end),
+                simulation=True,         # 模拟解算
                 sampleBy=1,
-                disableImplicitControl=True,
+                disableImplicitControl=True, # 烘焙后断开约束，非常重要！
                 preserveOutsideKeys=True,
                 sparseAnimCurveBake=False,
-                minimizeRotation=True,  # 防止欧拉角翻转 (359 -> 1)
+                minimizeRotation=True,
                 shape=True
             )
         except Exception as e:
             self.add_log(f"Bake failed: {e}")
             return False
+
         # --- 5. 隔离与清理 (Isolation) ---
         self.add_log("Isolating skeleton for export...")
         try:
-            # A. Unparent: 把根骨骼移到世界层级
-            # 如果它在 Group_Rig 下面，移出来，防止导出空组
+            # A. Unparent
+            # 注意：必须先烘焙(Bake)完，有了关键帧，才能 Unparent！顺序是对的。
             if cmds.listRelatives(root_joint, parent=True):
                 cmds.parent(root_joint, world=True)
 
-            # B. Select: 选中根骨骼
-            # 我们将在 _export_fbx_command 里使用 exportSelected=True
-            # 这样场景里剩下的控制器、约束、IKHandle 都不会被导出，相当于自动清理了
-            cmds.select(root_joint)
+            # B. Select
+            # 【关键修改 C】: 选中所有骨骼！不仅仅是 Root！
+            # 这样 Export Selected (es=True) 才能保证每一根骨头的曲线都被写入 FBX
+            cmds.select(all_joints)  # <--- 这里的区别决定了成败
 
-            self.add_log("Skeleton isolated and selected.")
-            return True  # 逻辑执行成功，准备导出
+            self.add_log("Skeleton isolated and selected (All joints).")
+            return True
 
         except Exception as e:
             self.add_log(f"Isolation failed: {e}")

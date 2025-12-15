@@ -38,7 +38,7 @@ def create_controller(name, shape, size, color_data, match_pos, match_rot, use_o
     elif shape == "Cube":
         ctrl = cmds.circle(n=ctrl_name, nr=(1, 0, 0), r=size)[0]
     else:
-        ctrl = cmds.circle(n=ctrl_name, nr=(1, 0, 0), r=size)[0]
+        ctrl = cmds.circle(n=ctrl_name, nr=(0, 1, 0), r=size)[0]
 
     # --- 3. 上色 ---
     _apply_color(ctrl, color_data)
