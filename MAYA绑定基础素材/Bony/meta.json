@@ -1,0 +1,25 @@
+{
+    "asset_name": "Ultimate_Bony1.0.5",
+    "versions": {
+        "v001": {
+            "version": "v001",
+            "filename": "Ultimate_Bony1.0.5_v001.ma",
+            "path": "_versions/v001/Ultimate_Bony1.0.5_v001.ma",
+            "author": "Li",
+            "time": "2025-12-13 23:04:01",
+            "comment": "测试模型导出",
+            "thumbnail": "_versions\\v001\\Ultimate_Bony1.0.5_v001.jpg",
+            "is_published": true
+        },
+        "v002": {
+            "version": "v002",
+            "filename": "Ultimate_Bony1.0.5_v002.ma",
+            "path": "_versions/v002/Ultimate_Bony1.0.5_v002.ma",
+            "author": "Li",
+            "time": "2025-12-13 23:17:12",
+            "comment": "测试动画导出",
+            "thumbnail": "_versions\\v002\\Ultimate_Bony1.0.5_v002.jpg",
+            "is_published": true
+        }
+    }
+}

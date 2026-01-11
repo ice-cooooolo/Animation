@@ -1,0 +1,55 @@
+{
+    "asset_name": "Remy",
+    "versions": {
+        "v001": {
+            "version": "v001",
+            "filename": "Remy_v001.ma",
+            "path": "_versions/v001/Remy_v001.ma",
+            "author": "Li",
+            "time": "2025-12-13 23:32:32",
+            "comment": "模型导出测试",
+            "thumbnail": "_versions\\v001\\Remy_v001.jpg",
+            "is_published": false
+        },
+        "v002": {
+            "version": "v002",
+            "filename": "Remy_v002.ma",
+            "path": "_versions/v002/Remy_v002.ma",
+            "author": "Li",
+            "time": "2025-12-13 23:45:33",
+            "comment": "动画导出",
+            "thumbnail": "_versions\\v002\\Remy_v002.jpg",
+            "is_published": true
+        },
+        "v003": {
+            "version": "v003",
+            "filename": "Remy_v003.ma",
+            "path": "_versions/v003/Remy_v003.ma",
+            "author": "Li",
+            "time": "2025-12-13 23:48:50",
+            "comment": "版本导出测试",
+            "thumbnail": "_versions\\v003\\Remy_v003.jpg",
+            "is_published": true
+        },
+        "v004": {
+            "version": "v004",
+            "filename": "Remy_v004.ma",
+            "path": "_versions/v004/Remy_v004.ma",
+            "author": "Li",
+            "time": "2026-01-06 23:57:26",
+            "comment": "测试",
+            "thumbnail": "_versions\\v004\\Remy_v004.jpg",
+            "is_published": false
+        },
+        "v005": {
+            "version": "v005",
+            "filename": "Remy_v005.ma",
+            "path": "_versions/v005/Remy_v005.ma",
+            "author": "Li",
+            "time": "2026-01-06 23:58:06",
+            "comment": "版本测试",
+            "thumbnail": "_versions\\v005\\Remy_v005.jpg",
+            "is_published": false
+        }
+    }
+}

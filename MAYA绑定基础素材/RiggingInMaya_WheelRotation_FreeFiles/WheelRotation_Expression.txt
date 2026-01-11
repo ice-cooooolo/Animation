@@ -1,0 +1,32 @@
+// Set Wheel Radius
+$lf_fr_wheel_radius = 78.3 /2;
+
+// Store Position Data
+vector $lf_fr_wheel_oldpos = `xform -q -ws -t "lf_fr_wheel_oldpos"`;
+vector $lf_fr_wheel_newpos = `xform -q -ws -t "lf_fr_wheel_grp"`;
+vector $lf_fr_wheel_dirpos = `xform -q -ws -t "lf_fr_wheel_dir"`;
+
+vector $lf_fr_wheel_dir = ($lf_fr_wheel_dirpos - $lf_fr_wheel_newpos);
+vector $lf_fr_wheel_movement = ($lf_fr_wheel_newpos - $lf_fr_wheel_oldpos);
+
+// Calculate Magnitude - Length of the Vector
+float $lf_fr_wheel_distance = mag($lf_fr_wheel_movement);
+
+// Calculate The Wheel Direction
+$lf_fr_wheel_dot = dotProduct($lf_fr_wheel_movement, $lf_fr_wheel_dir, 1);
+
+// Setup Wheel Controls
+if (lift_ctrl.translateY > 0)
+	lf_fr_wheel_rotate.rotateX = lf_fr_wheel_rotate.rotateX;
+
+else if (root_ctrl.rotateType)
+	lf_fr_wheel_rotate.rotateX = root_ctrl.manualRotate;
+
+else
+	lf_fr_wheel_rotate.rotateX = lf_fr_wheel_rotate.rotateX + 360 / (6.283*$lf_fr_wheel_radius) * ($lf_fr_wheel_dot*$lf_fr_wheel_distance) * root_ctrl.rotateMulti;
+
+// Move The Old Posiiton Locator back to the Wheel
+matchTransform lf_fr_wheel_oldpos lf_fr_wheel_grp;
+
+// Add a dummy variable so we can see the wheel rotate in real time
+$temp = root_ctrl.translateZ;

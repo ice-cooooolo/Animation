@@ -32,7 +32,7 @@ def create_controller(name, shape, size, color_data, match_pos, match_rot, use_o
 
     # --- 2. 原点创建 (保持 X 轴朝向) ---
     if shape == "Square":
-        ctrl = cmds.circle(n=ctrl_name, nr=(1, 0, 0), r=size, d=1, s=4)[0]
+        ctrl = cmds.circle(n=ctrl_name, nr=(0, 1, 0), r=size, d=1, s=4)[0]
         cmds.xform(ctrl, ro=(45, 0, 0), relative=True)
         cmds.makeIdentity(ctrl, apply=True, t=1, r=1, s=1)
     elif shape == "Cube":

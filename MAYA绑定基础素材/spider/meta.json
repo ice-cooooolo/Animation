@@ -1,0 +1,15 @@
+{
+    "asset_name": "Spider_Rig_Anim",
+    "versions": {
+        "v001": {
+            "version": "v001",
+            "filename": "Spider_Rig_Anim_v001.ma",
+            "path": "_versions/v001/Spider_Rig_Anim_v001.ma",
+            "author": "Li",
+            "time": "2025-12-23 14:38:52",
+            "comment": "anim export",
+            "thumbnail": "_versions\\v001\\Spider_Rig_Anim_v001.jpg",
+            "is_published": true
+        }
+    }
+}

@@ -1,0 +1,25 @@
+{
+    "asset_name": "girl_ok_1 - 副本",
+    "versions": {
+        "v001": {
+            "version": "v001",
+            "filename": "girl_ok_1 - 副本_v001.mb",
+            "path": "_versions/v001/girl_ok_1 - 副本_v001.mb",
+            "author": "Li",
+            "time": "2025-12-13 21:42:33",
+            "comment": "测试版本管理工具",
+            "thumbnail": "_versions\\v001\\girl_ok_1 - 副本_v001.jpg",
+            "is_published": true
+        },
+        "v002": {
+            "version": "v002",
+            "filename": "girl_ok_1 - 副本_v002.mb",
+            "path": "_versions/v002/girl_ok_1 - 副本_v002.mb",
+            "author": "Li",
+            "time": "2025-12-13 22:30:42",
+            "comment": "测试模型导出",
+            "thumbnail": "_versions\\v002\\girl_ok_1 - 副本_v002.jpg",
+            "is_published": true
+        }
+    }
+}
